@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Detector</title>
+    <style>
+        *::before,*::after, *{
+            box-sizing: border-box;
+        }
+        body{
+            background-color: antiquewhite;
+            color: hsl(34, 78%, 40%);
+            text-align: center;
+        }
+        .password-test-meter{
+            overflow: hidden;
+            position: relative;
+            border: 2px solid  hsl(34, 78%, 40%);
+            height: 1rem;
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 1rem;
+        }
+        .password-test-meter::before{
+            content: '';
+            height: 100%;
+            position: absolute;
+            background-color:  hsl(34, 78%, 60%);
+            left: 0;
+            width: calc(1% * var(--strength,10));
+            transition: width 200ms;
+        }
+        .passwd{
+            height: 50px;
+            border: none;
+            margin-top: 24px;
+            width: 80%;
+            border-radius: 0.5rem;
+            padding-left: 1.5rem;
+        }
+        #result{
+            color:hsl(34, 78%, 60%) ;
+            margin-top: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Password Strength Tester</h1>
+    <div class="password-test-meter" id="meter"></div>
+    <input class="passwd" value="Mclegacy" id="passwd" type="text" name="input" id="" aria-labelledby="password" autofocus >
+    <div id="result">
+       
+    </div>
+
+<script >
+const meter=document.getElementById("meter");
+const passwd=document.getElementById("passwd");
+const results=document.getElementById("result");
+
+const lengthChecker=(password)=>{
+    if(password.length < 5){
+        return {message:"password is shorter than your life", deductions:40}
+    }
+    if(password.length <=10){
+        return {message:"password could be a little longer", deductions:15}
+    }
+}
+
+function lowerCaseCheck(password){
+    const regex=/[a-z]+/
+    console.log(password.match(regex));
+    if(regex.test(password)===false){
+        return {message:"you password should have at lease 1 lower case character", deductions:10}
+    }
+    
+
+}
+
+function passwordOutput(password){
+    const outputMessage=[];
+    outputMessage.push(lengthChecker(password));
+    outputMessage.push(lowerCaseCheck(password));
+    return outputMessage;
+
+}
+function updateMeter(value){
+let initialStrength=100;
+results.innerHTML="";
+
+const res =passwordOutput(value);
+res.forEach((result)=>{ 
+    if(result==null) return
+    initialStrength-=result.deductions
+
+const messageContainer=document.createElement("div");
+messageContainer.innerText=result.message;
+results.appendChild(messageContainer);
+
+});
+meter.style.setProperty("--strength",initialStrength)
+
+
+
+}
+
+function inputHandler(event){
+// const returnedValue=event.target.value.length;
+updateMeter(event.target.value)
+console.log();
+}
+
+passwd.addEventListener("input", inputHandler)
+</script>
+</body>
+</html>
